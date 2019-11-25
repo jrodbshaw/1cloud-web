@@ -1,20 +1,30 @@
 import React from 'react';
-// * Context
-import { Provider as AuthProvider } from "./context/AuthContext";
-import './App.css';
+import { Router } from '@reach/router';
+import { CssBaseline } from '@material-ui/core';
+// * screens
+import DashboardScreen from './screens/DashboardScreen';
+import Home from './screens/Home';
+import SignInScreen from './screens/SigninScreen';
+import SignUpScreen from './screens/SignupScreen';
 
 const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <text>One Cloud</text>
-      </header>
-    </div>
+    <>
+      <CssBaseline />
+      <Router>
+        <Home path='/' />
+        <DashboardScreen path='/dashboard' />
+        <SignInScreen path='/signin' />
+        <SignUpScreen path='/signup' />
+        {/* <Container maxWidth="sm">
+        <Typography component="div" className={classes.root}>OneCloud ID</Typography>
+      </Container> */}
+      </Router>
+    </>
   );
 }
 
 export default () => (
-  <AuthProvider>
-    <App />
-  </AuthProvider>
-);;
+  <App />
+)
+

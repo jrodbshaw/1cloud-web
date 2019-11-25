@@ -1,4 +1,7 @@
 import createDataContext from "./CreateDataContext";
+import { navigate } from "@reach/router"
+// * firebase
+import { firebase, db } from '../firebase'
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -6,30 +9,67 @@ const authReducer = (state, action) => {
       return { ...state, errorMessage: action.payload };
     case "signup":
       return { errorMessage: "", user: action.payload };
+    case "signin":
+      return { errorMessage: "", user: action.payload };
+    case "signout":
+      return { errorMessage: "", user: null };
     default:
       return state;
   }
 };
 
-const signup = dispatch => async ({ email, password }) => {
-  // * create user with email & password
-  // * save user to firestore
-  // * add either user or a user ID to context
-  // * if signup fails handle error
+const useAuth = dispatch => () => {
+  console.log('Ran auth')
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+      dispatch({ type: "signin", payload: user });
+      // * handle  route to account
+      navigate('/dashboard')
+    } else {
+      // * handle route to signin
+      navigate('/signup')
+    }
+  })
 };
 
-const signin = dispatch => ({ email, password }) => {
-  //* make request to signin
-  //* if we sign in, update state
-  //* if signin fails handle error
+const signup = dispatch => async (email, password) => {
+  console.log("Ran signup")
+  try {
+    console.log("Awaiting signup")
+    const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password);
+    console.log(user)
+    dispatch({ type: "signin", payload: user });
+  } catch (error) {
+    dispatch({ type: 'add_error', payload: { error: true } })
+  }
 };
 
-const signout = dispatch => () => {
-  //* make request to signout
+const signin = dispatch => async (email, password) => {
+  try {
+    const { user } = await firebase.auth().signInWithEmailAndPassword(email, password);
+    dispatch({ type: "signin", payload: user })
+    // * handle  route to account
+    navigate('/dashboard')
+  } catch (error) {
+    dispatch({ type: 'add_error', payload: { error: true } })
+  }
+};
+
+const signout = dispatch => async () => {
+  try {
+    await firebase.auth().signOut();
+    dispatch({ type: "signout" });
+    // * handle route to signin
+  } catch (error) {
+    dispatch({
+      type: "add_error",
+      payload: { error: true }
+    });
+  }
 };
 
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signup, signin, signout },
+  { signup, signin, signout, useAuth },
   { user: null, errorMessage: "" }
 );
