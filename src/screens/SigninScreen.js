@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from "@reach/router";
-import { Button, TextField, Grid, Box, Typography, Container } from '@material-ui/core';
+// * context
+import { Context as AuthContext } from "../context/AuthContext";
+import { Button, TextField, Grid, Box, Typography, Container, LinearProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import ErrorSnackbar from '../components/ErrorSnackbar'
 
 function Copyright() {
   return (
@@ -41,17 +44,40 @@ const useStyles = makeStyles(theme => ({
     textDecoration: 'false'
   },
   signuplink: {
-    // marginTop: theme.spacing(5),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-  }
+  },
+
 }));
 
 export default function SignInScreen() {
+  const { state, signin, clearErrorMessage } = useContext(AuthContext);
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [buttonText, setButtonText] = useState("sign in");
+  const [loading, setLoading] = useState(false);
+  const [useError, setUseError] = useState("")
+
+  const authError = state.errorMessage;
+
+  useEffect(() => {
+    authError ? setUseError(authError.message) : setUseError("")
+  }, [authError]);
+
+  const handleSignin = () => {
+    setLoading(true)
+    setButtonText('beaming up....')
+
+    signin(email, password)
+  }
+
+  const handleErrorMessage = () => {
+    setLoading(false)
+    setButtonText('create')
+    clearErrorMessage()
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -62,10 +88,11 @@ export default function SignInScreen() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate >
           <TextField
             variant="outlined"
             margin="normal"
+            disabled={loading}
             required
             fullWidth
             id="email"
@@ -79,6 +106,7 @@ export default function SignInScreen() {
           <TextField
             variant="outlined"
             margin="normal"
+            disabled={loading}
             required
             fullWidth
             label="Password"
@@ -89,16 +117,19 @@ export default function SignInScreen() {
             onChange={e => setPassword(e.target.value)}
             autoComplete="current-password"
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            onClick={() => console.log(email, password)}
-          >
-            Sign In
-          </Button>
+          <div className={classes.wrapper}>
+            <Button
+              fullWidth
+              disabled={loading}
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={handleSignin}
+            >
+              {buttonText}
+            </Button>
+            {loading && < LinearProgress />}
+          </div>
           <Grid container className={classes.forgotPassword}>
             <Grid item xs>
               <Button color="primary" component={Link} to='/' >Forgot password?</Button>
@@ -116,6 +147,7 @@ export default function SignInScreen() {
       <Box mt={8}>
         <Copyright />
       </Box>
+      {useError && <ErrorSnackbar errorMessage={useError} handleClearError={handleErrorMessage} />}
     </Container >
   );
 }

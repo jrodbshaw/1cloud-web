@@ -44,5 +44,5 @@ Have installed for dev the following dependencies;
     "babel-plugin-import": "^1.13.0",
     "customize-cra": "^0.9.1",
     "react-app-rewired": "^2.1.5"
-    These allow for import {multiple mui components from @materialui/core} without the whole monkey on the back...
+    These allow for import {multiple mui components } from @materialui/core, without the whole monkey on the back...
 
