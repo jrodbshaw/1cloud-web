@@ -15,24 +15,35 @@ const authReducer = (state, action) => {
       return { errorMessage: "", user: action.payload };
     case "signout":
       return { errorMessage: "", user: null };
+    case "reset_password":
+      return { errorMessage: "", email: action.payload };
     default:
       return state;
   }
 };
+
+const resetPassword = dispatch => async (emailAddress) => {
+  try {
+    const email = await firebase.auth().sendPasswordResetEmail(emailAddress)
+    // * Email sent.
+    dispatch({ type: 'reset_password', payload: email })
+  } catch (error) {
+    dispatch({ type: 'add_error', payload: error })
+  }
+}
 
 const clearErrorMessage = dispatch => () => {
   dispatch({ type: 'clear_error_message' })
 }
 
 const trySignin = dispatch => () => {
-  firebase.auth().onAuthStateChanged(async (user) => {
+  firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       dispatch({ type: "signin", payload: user });
-      // * handle  route to account
-      navigate('/dashboard')
+      navigate('/')
     } else {
-      // * handle route to signin
-      navigate('/signup')
+      dispatch({ type: "signin", payload: null });
+      navigate('/signin')
     }
   })
 };
@@ -52,8 +63,6 @@ const signin = dispatch => async (email, password) => {
     await firebase.auth().onAuthStateChanged(firebaseUser => {
       if (firebaseUser) {
         const user = {
-          displayName: firebaseUser.displayName,
-          photoUrl: firebaseUser.photoURL,
           uid: firebaseUser.uid
         };
         dispatch({ type: "signin", payload: user })
@@ -65,7 +74,7 @@ const signin = dispatch => async (email, password) => {
       }
     })
     // * handle  route to account
-    navigate('/dashboard')
+    navigate('/')
   } catch (error) {
     console.log(error)
     dispatch({ type: 'add_error', payload: error })
@@ -88,6 +97,6 @@ const signout = dispatch => async () => {
 
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signup, signin, signout, trySignin, clearErrorMessage },
+  { signup, signin, signout, trySignin, clearErrorMessage, resetPassword },
   { user: null, errorMessage: "" }
 );

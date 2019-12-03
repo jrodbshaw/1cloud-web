@@ -10,7 +10,7 @@ import ErrorSnackbar from '../components/ErrorSnackbar'
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '} One Cloud ID {new Date().getFullYear()}
+            {'Copyright © '} Vuze ID {new Date().getFullYear()}
             {'.'}
         </Typography>
     );
@@ -46,10 +46,9 @@ export default function SignUpScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordMatch, setPasswordMatch] = useState("");
-    const [passwordError, setPasswordError] = useState({ error: false, message: '' });
     const [buttonText, setButtonText] = useState("create");
     const [loading, setLoading] = useState(false);
-    const [useError, setUseError] = useState("")
+    const [useError, setUseError] = useState("");
 
     const authError = state.errorMessage;
 
@@ -60,12 +59,14 @@ export default function SignUpScreen() {
     const handleSignup = () => {
         setLoading(true)
         setButtonText('attempting to create profile....')
-        signup(email, password)
+        // * handle validation
+        // * check passwordMatch matches
+        signup(email, password, passwordMatch)
     }
 
     const handleErrorMessage = () => {
         setLoading(false)
-        setButtonText('create')
+        setButtonText('Creating ID')
         clearErrorMessage()
     }
 
@@ -73,7 +74,7 @@ export default function SignUpScreen() {
         <Container component="main" maxWidth="xs">
             <div className={classes.paper}>
                 <Typography component="h1" variant="h4" className={classes.signinText} >
-                    One Cloud ID
+                    Vuze ID
                 </Typography>
                 <Typography component="h1" variant="h5">
                     Create ID
@@ -85,16 +86,15 @@ export default function SignUpScreen() {
                         margin="normal"
                         required
                         fullWidth
+                        label="Email"
+                        placeholder="user@mail.com"
                         id="email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        label="Email"
-                        placeholder="user@mail.com"
                         autoComplete="email"
                         autoFocus
                     />
                     <TextField
-                        error={passwordError.error}
                         variant="outlined"
                         disabled={loading}
                         margin="normal"
@@ -102,7 +102,6 @@ export default function SignUpScreen() {
                         fullWidth
                         label="Password"
                         placeholder="Example123"
-                        helperText={passwordError.message}
                         type="password"
                         id="password"
                         value={password}
@@ -110,7 +109,6 @@ export default function SignUpScreen() {
                         autoComplete="current-password"
                     />
                     <TextField
-                        error={passwordError.error}
                         variant="outlined"
                         disabled={loading}
                         margin="normal"
@@ -118,7 +116,6 @@ export default function SignUpScreen() {
                         fullWidth
                         label="Re-type Password"
                         placeholder="Example123"
-                        helperText={passwordError.message}
                         type="password"
                         id="passwordMatch"
                         value={passwordMatch}

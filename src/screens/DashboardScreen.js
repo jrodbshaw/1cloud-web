@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from '@reach/router';
+// * context
+import { Context as AuthContext } from "../context/AuthContext";
+// * Styling
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Button, Tabs, Tab, Typography, Box, } from '@material-ui/core';
 import CloudIcon from '@material-ui/icons/Cloud';
+// * components
 import IndividualCard from '../components/IndividualCard';
 import CompanyCard from '../components/CompanyCard';
 import ProjectCard from '../components/ProjectCard';
@@ -64,6 +68,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Dashboard() {
+    const { state } = useContext(AuthContext);
+    console.log(state)
     const classes = useStyles();
     const [value, setValue] = useState(0);
 

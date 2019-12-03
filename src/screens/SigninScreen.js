@@ -2,9 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from "@reach/router";
 // * context
 import { Context as AuthContext } from "../context/AuthContext";
-import { Button, TextField, Grid, Box, Typography, Container, LinearProgress } from '@material-ui/core';
+import { Button, TextField, Grid, Box, Typography, Container, LinearProgress, Modal, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ErrorSnackbar from '../components/ErrorSnackbar'
+import ConfirmationSnackbar from '../components/ConfirmationSnackbar'
 
 function Copyright() {
   return (
@@ -13,6 +14,21 @@ function Copyright() {
       {'.'}
     </Typography>
   );
+}
+
+function rand() {
+  return Math.round(Math.random() * 20) - 10;
+}
+
+function getModalStyle() {
+  const top = 50 + rand();
+  const left = 50 + rand();
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
 }
 
 const useStyles = makeStyles(theme => ({
@@ -48,17 +64,44 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  modalPaper: {
+    position: 'absolute',
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+    display: "flex",
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
 
 }));
 
 export default function SignInScreen() {
-  const { state, signin, clearErrorMessage } = useContext(AuthContext);
+  const { state, signin, clearErrorMessage, resetPassword } = useContext(AuthContext);
+  // getModalStyle is not a pure function, we roll the style only on the first render
+  const [modalStyle] = useState(getModalStyle);
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [buttonText, setButtonText] = useState("sign in");
   const [loading, setLoading] = useState(false);
   const [useError, setUseError] = useState("")
+  const [open, setOpen] = useState(false);
+  const [resetPasswordEmail, setResetPasswordEmail] = useState("")
+  const [emailSent, setEmailSent] = useState(false)
+  const [modalLoading, setModalLoading] = useState(false)
+  const [resetPasswordError, setResetPasswordError] = useState("")
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const authError = state.errorMessage;
 
@@ -69,7 +112,6 @@ export default function SignInScreen() {
   const handleSignin = () => {
     setLoading(true)
     setButtonText('beaming up....')
-
     signin(email, password)
   }
 
@@ -78,6 +120,23 @@ export default function SignInScreen() {
     setButtonText('create')
     clearErrorMessage()
   }
+
+  const handlePasswordReset = async () => {
+    if (!resetPasswordEmail) {
+      setModalLoading(false)
+      setResetPasswordError("Email is required")
+      return
+    };
+    setResetPasswordError("")
+    setModalLoading(true)
+    await resetPassword(resetPasswordEmail)
+    setModalLoading(false)
+    setOpen(false)
+    setEmailSent(true)
+  }
+
+
+  // * get ConfirmationSnackbar to show after email is sent and modal closes
 
   return (
     <Container component="main" maxWidth="xs">
@@ -132,7 +191,7 @@ export default function SignInScreen() {
           </div>
           <Grid container className={classes.forgotPassword}>
             <Grid item xs>
-              <Button color="primary" component={Link} to='/' >Forgot password?</Button>
+              <Button color="primary" onClick={handleOpen}>Forgot password?</Button>
             </Grid>
           </Grid>
           <Grid container className={classes.signuplink}>
@@ -143,11 +202,41 @@ export default function SignInScreen() {
             </Grid>
           </Grid>
         </form>
+        <Modal
+          aria-labelledby="simple-modal-title"
+          aria-describedby="simple-modal-description"
+          open={open}
+          onClose={handleClose}
+        >
+          <div style={modalStyle} className={classes.modalPaper}>
+            <h2 id="simple-modal-title">Reset Password</h2>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              disabled={modalLoading}
+              error={!resetPasswordError ? false : true}
+              helperText={resetPasswordError}
+              required
+              fullWidth
+              id="email"
+              value={resetPasswordEmail}
+              onChange={e => setResetPasswordEmail(e.target.value)}
+              label="Email Address"
+              placeholder="user@mail.com"
+              autoComplete="email"
+              autoFocus
+            />
+            {!modalLoading
+              ? (<Button color="primary" disabled={modalLoading} onClick={handlePasswordReset}>Send email</Button>)
+              : (<CircularProgress style={{ color: "green" }} />)}
+          </div>
+        </Modal>
       </div>
       <Box mt={8}>
         <Copyright />
       </Box>
       {useError && <ErrorSnackbar errorMessage={useError} handleClearError={handleErrorMessage} />}
+      {emailSent && <ConfirmationSnackbar />}
     </Container >
   );
 }

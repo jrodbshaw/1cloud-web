@@ -7,9 +7,11 @@
         "classname",
         "clsx",
         "cynvs",
+        "describedby",
         "dvi",
         "iza",
         "j",
+        "labelledby",
         "m",
         "mixins",
         "onecloud",
@@ -21,6 +23,7 @@
         "signout",
         "signuplink",
         "sy",
+        "tabpanel",
         "tc",
         "tw"
     ]
