@@ -3,6 +3,7 @@ import { Context as AuthContext } from "../context/AuthContext";
 
 const ResolveAuthScreen = () => {
   const { trySignin } = useContext(AuthContext);
+
   useEffect(() => {
     trySignin();
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Snackbar, SnackbarContent, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
-export default function ErrorSnackbar({ }) {
+export default function ErrorSnackbar() {
     const [open, setOpen] = useState(true);
 
     const handleClose = () => {
@@ -14,7 +14,7 @@ export default function ErrorSnackbar({ }) {
             <Snackbar open={open}>
                 <SnackbarContent
                     style={{ backgroundColor: "green" }}
-                    message="Reset Password email sent to your email"
+                    message="Check your inbox to reset your password"
                     action={[
                         <IconButton
                             key="close"

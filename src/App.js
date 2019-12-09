@@ -8,28 +8,25 @@ import { CssBaseline } from '@material-ui/core';
 // * screens
 import DashboardScreen from './screens/DashboardScreen';
 import Home from './screens/Home';
-// import SignInScreen from './screens/SigninScreen';
 import SignUpScreen from './screens/SignupScreen';
-import FormikSignin from './screens/FormikSignin';
-// import ResolveAuthScreen from './screens/ResolveAuthScreen';
+import SigninScreen from './screens/SigninScreen';
 import NotFound from './screens/NotFound'
 
 const App = () => {
-  // const { trySignin } = useContext(AuthContext);
+  const { trySignin } = useContext(AuthContext);
 
-  // useEffect(() => {
-  //   return trySignin();
-  // }, []);
+  // * sort out the onAuthStateChange with firebase to check on load for a current user...
+  useEffect(() => {
+    return trySignin()
+  }, [])
 
   return (
     <>
       <Router>
         <NotFound default />
-        {/* <ResolveAuthScreen path="/" /> */}
         <Home path='/home' />
         <DashboardScreen path='/' />
-        {/* <SignInScreen path='/signin' /> */}
-        <FormikSignin path='/signin' />
+        <SigninScreen path='/signin' />
         <SignUpScreen path='/signup' />
       </Router>
     </>

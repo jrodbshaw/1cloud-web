@@ -14,19 +14,19 @@ const authReducer = (state, action) => {
     case "signin":
       return { errorMessage: "", user: action.payload };
     case "signout":
-      return { errorMessage: "", user: null };
+      return { errorMessage: "", user: action.payload };
     case "reset_password":
-      return { errorMessage: "", email: action.payload };
+      return { errorMessage: "", emailSent: action.payload };
     default:
       return state;
   }
 };
 
-const resetPassword = dispatch => async (emailAddress) => {
+const resetPassword = dispatch => (emailAddress) => {
   try {
-    const email = await firebase.auth().sendPasswordResetEmail(emailAddress)
+    firebase.auth().sendPasswordResetEmail(emailAddress)
     // * Email sent.
-    dispatch({ type: 'reset_password', payload: email })
+    dispatch({ type: 'reset_password', payload: true })
   } catch (error) {
     dispatch({ type: 'add_error', payload: error })
   }
@@ -36,17 +36,17 @@ const clearErrorMessage = dispatch => () => {
   dispatch({ type: 'clear_error_message' })
 }
 
-// const trySignin = dispatch => () => {
-//   firebase.auth().onAuthStateChanged((user) => {
-//     if (user) {
-//       dispatch({ type: "signin", payload: user });
-//       navigate('/')
-//     } else {
-//       dispatch({ type: "signin", payload: null });
-//       navigate('/signin')
-//     }
-//   })
-// };
+const trySignin = dispatch => () => {
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      dispatch({ type: "signin", payload: user });
+      navigate('/')
+    } else {
+      dispatch({ type: "signin", payload: null });
+      navigate('/signin')
+    }
+  })
+};
 
 const signup = dispatch => async (email, password) => {
   try {
@@ -84,7 +84,7 @@ const signin = dispatch => async (email, password) => {
 const signout = dispatch => async () => {
   try {
     await firebase.auth().signOut();
-    dispatch({ type: "signout" });
+    dispatch({ type: "signout", payload: null });
     // * handle route to signin
     navigate('/signin')
   } catch (error) {
@@ -97,6 +97,6 @@ const signout = dispatch => async () => {
 
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signup, signin, signout, clearErrorMessage, resetPassword }, // trySignin
+  { signup, signin, signout, trySignin, clearErrorMessage, resetPassword }, // trySignin
   { user: null, errorMessage: "" }
 );
