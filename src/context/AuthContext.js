@@ -36,17 +36,17 @@ const clearErrorMessage = dispatch => () => {
   dispatch({ type: 'clear_error_message' })
 }
 
-const trySignin = dispatch => () => {
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      dispatch({ type: "signin", payload: user });
-      navigate('/')
-    } else {
-      dispatch({ type: "signin", payload: null });
-      navigate('/signin')
-    }
-  })
-};
+// const trySignin = dispatch => () => {
+//   firebase.auth().onAuthStateChanged((user) => {
+//     if (user) {
+//       dispatch({ type: "signin", payload: user });
+//       navigate('/')
+//     } else {
+//       dispatch({ type: "signin", payload: null });
+//       navigate('/signin')
+//     }
+//   })
+// };
 
 const signup = dispatch => async (email, password) => {
   try {
@@ -60,7 +60,7 @@ const signup = dispatch => async (email, password) => {
 const signin = dispatch => async (email, password) => {
   try {
     await firebase.auth().signInWithEmailAndPassword(email, password);
-    await firebase.auth().onAuthStateChanged(firebaseUser => {
+    firebase.auth().onAuthStateChanged(firebaseUser => {
       if (firebaseUser) {
         const user = {
           uid: firebaseUser.uid
@@ -73,7 +73,7 @@ const signin = dispatch => async (email, password) => {
         dispatch({ type: "signin", payload: null })
       }
     })
-    // * handle  route to account
+    // * handle route to account
     navigate('/')
   } catch (error) {
     console.log(error)
@@ -97,6 +97,6 @@ const signout = dispatch => async () => {
 
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signup, signin, signout, trySignin, clearErrorMessage, resetPassword },
+  { signup, signin, signout, clearErrorMessage, resetPassword }, // trySignin
   { user: null, errorMessage: "" }
 );

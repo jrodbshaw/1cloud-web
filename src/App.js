@@ -8,18 +8,18 @@ import { CssBaseline } from '@material-ui/core';
 // * screens
 import DashboardScreen from './screens/DashboardScreen';
 import Home from './screens/Home';
-import SignInScreen from './screens/SigninScreen';
+// import SignInScreen from './screens/SigninScreen';
 import SignUpScreen from './screens/SignupScreen';
+import FormikSignin from './screens/FormikSignin';
 // import ResolveAuthScreen from './screens/ResolveAuthScreen';
 import NotFound from './screens/NotFound'
 
 const App = () => {
+  // const { trySignin } = useContext(AuthContext);
 
-  const { trySignin } = useContext(AuthContext);
-  useEffect(() => {
-    return trySignin();
-
-  }, []);
+  // useEffect(() => {
+  //   return trySignin();
+  // }, []);
 
   return (
     <>
@@ -28,7 +28,8 @@ const App = () => {
         {/* <ResolveAuthScreen path="/" /> */}
         <Home path='/home' />
         <DashboardScreen path='/' />
-        <SignInScreen path='/signin' />
+        {/* <SignInScreen path='/signin' /> */}
+        <FormikSignin path='/signin' />
         <SignUpScreen path='/signup' />
       </Router>
     </>

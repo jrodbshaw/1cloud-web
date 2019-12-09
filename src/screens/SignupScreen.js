@@ -10,7 +10,7 @@ import ErrorSnackbar from '../components/ErrorSnackbar'
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '} Vuze ID {new Date().getFullYear()}
+            {'Copyright © '} 1Cloud ID {new Date().getFullYear()}
             {'.'}
         </Typography>
     );
@@ -74,7 +74,7 @@ export default function SignUpScreen() {
         <Container component="main" maxWidth="xs">
             <div className={classes.paper}>
                 <Typography component="h1" variant="h4" className={classes.signinText} >
-                    Vuze ID
+                    1Cloud ID
                 </Typography>
                 <Typography component="h1" variant="h5">
                     Create ID

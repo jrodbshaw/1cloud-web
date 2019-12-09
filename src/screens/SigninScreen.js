@@ -2,8 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from "@reach/router";
 // * context
 import { Context as AuthContext } from "../context/AuthContext";
+// * dependencies
 import { Button, TextField, Grid, Box, Typography, Container, LinearProgress, Modal, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import {
+  Formik, Form, Field, ErrorMessage,
+} from 'formik';
+import * as Yup from 'yup';
+// * components
 import ErrorSnackbar from '../components/ErrorSnackbar'
 import ConfirmationSnackbar from '../components/ConfirmationSnackbar'
 
@@ -78,6 +84,13 @@ const useStyles = makeStyles(theme => ({
   },
 
 }));
+
+const SigninSchema = Yup.object().shape({
+  email: Yup.string()
+    .email('Invalid email')
+    .required('Required'),
+  password: Yup.string().required('Password is required'),
+});
 
 export default function SignInScreen() {
   const { state, signin, clearErrorMessage, resetPassword } = useContext(AuthContext);
