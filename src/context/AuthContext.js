@@ -1,7 +1,7 @@
 import createDataContext from "./CreateDataContext";
-import { navigate } from "@reach/router"
+import { navigate } from "@reach/router";
 // * firebase
-import { firebase, db } from '../firebase'
+import { firebase, db } from "../firebase";
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -13,8 +13,6 @@ const authReducer = (state, action) => {
       return { errorMessage: "", user: action.payload };
     case "signin":
       return { errorMessage: "", user: action.payload };
-    case "signout":
-      return { errorMessage: "", user: action.payload };
     case "reset_password":
       return { errorMessage: "", emailSent: action.payload };
     default:
@@ -22,38 +20,27 @@ const authReducer = (state, action) => {
   }
 };
 
-const resetPassword = dispatch => (emailAddress) => {
-  try {
-    firebase.auth().sendPasswordResetEmail(emailAddress)
-    // * Email sent.
-    dispatch({ type: 'reset_password', payload: true })
-  } catch (error) {
-    dispatch({ type: 'add_error', payload: error })
-  }
-}
-
-const clearErrorMessage = dispatch => () => {
-  dispatch({ type: 'clear_error_message' })
-}
-
 const trySignin = dispatch => () => {
-  firebase.auth().onAuthStateChanged((user) => {
+  firebase.auth().onAuthStateChanged(user => {
+    console.log(user);
     if (user) {
       dispatch({ type: "signin", payload: user });
-      navigate('/')
+      navigate("/");
     } else {
       dispatch({ type: "signin", payload: null });
-      navigate('/signin')
+      navigate("/signin");
     }
-  })
+  });
 };
 
 const signup = dispatch => async (email, password) => {
   try {
-    const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password);
+    const { user } = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password);
     dispatch({ type: "signin", payload: user });
   } catch (error) {
-    dispatch({ type: 'add_error', payload: error })
+    dispatch({ type: "add_error", payload: error });
   }
 };
 
@@ -65,34 +52,48 @@ const signin = dispatch => async (email, password) => {
         const user = {
           uid: firebaseUser.uid
         };
-        dispatch({ type: "signin", payload: user })
+        dispatch({ type: "signin", payload: user });
         db.collection("users")
           .doc(user.uid)
           .set(user, { merge: true });
       } else {
-        dispatch({ type: "signin", payload: null })
+        dispatch({ type: "signin", payload: null });
       }
-    })
+    });
     // * handle route to account
-    navigate('/')
+    navigate("/");
   } catch (error) {
-    console.log(error)
-    dispatch({ type: 'add_error', payload: error })
+    console.log(error);
+    dispatch({ type: "add_error", payload: error });
   }
 };
 
 const signout = dispatch => async () => {
   try {
     await firebase.auth().signOut();
-    dispatch({ type: "signout", payload: null });
+    dispatch({ type: "signin", payload: null });
     // * handle route to signin
-    navigate('/signin')
+    navigate("/signin");
   } catch (error) {
     dispatch({
       type: "add_error",
       payload: error
     });
   }
+};
+
+const resetPassword = dispatch => emailAddress => {
+  try {
+    firebase.auth().sendPasswordResetEmail(emailAddress);
+    // * Email sent.
+    dispatch({ type: "reset_password", payload: true });
+  } catch (error) {
+    dispatch({ type: "add_error", payload: error });
+  }
+};
+
+const clearErrorMessage = dispatch => () => {
+  dispatch({ type: "clear_error_message" });
 };
 
 export const { Provider, Context } = createDataContext(
