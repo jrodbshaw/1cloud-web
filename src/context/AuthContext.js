@@ -13,6 +13,8 @@ const authReducer = (state, action) => {
       return { errorMessage: "", user: action.payload };
     case "signin":
       return { errorMessage: "", user: action.payload };
+    case "signout":
+      return { errorMessage: "", user: action.payload };
     case "reset_password":
       return { errorMessage: "", emailSent: action.payload };
     default:
@@ -22,12 +24,12 @@ const authReducer = (state, action) => {
 
 const trySignin = dispatch => () => {
   firebase.auth().onAuthStateChanged(user => {
-    console.log(user);
     if (user) {
       dispatch({ type: "signin", payload: user });
+      // next line means if page refreshed from any where the user is rerouted back to dashboard...
       navigate("/");
     } else {
-      dispatch({ type: "signin", payload: null });
+      dispatch({ type: "signout", payload: null });
       navigate("/signin");
     }
   });
@@ -71,9 +73,9 @@ const signin = dispatch => async (email, password) => {
 const signout = dispatch => async () => {
   try {
     await firebase.auth().signOut();
-    dispatch({ type: "signin", payload: null });
+    dispatch({ type: "signout", payload: null });
     // * handle route to signin
-    navigate("/signin");
+    // navigate("/signin");
   } catch (error) {
     dispatch({
       type: "add_error",
@@ -98,6 +100,6 @@ const clearErrorMessage = dispatch => () => {
 
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signup, signin, signout, trySignin, clearErrorMessage, resetPassword }, // trySignin
+  { signup, signin, signout, trySignin, clearErrorMessage, resetPassword },
   { user: null, errorMessage: "" }
 );
