@@ -9,17 +9,9 @@ import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 import * as Yup from 'yup';
 // * components
+import Copyright from "../components/Copyright";
 import ErrorSnackbar from '../components/ErrorSnackbar'
 import ConfirmationSnackbar from '../components/ConfirmationSnackbar'
-
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '} One Cloud ID {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
@@ -100,7 +92,7 @@ export default function SigninScreen() {
     const classes = useStyles();
     const [buttonText, setButtonText] = useState("sign in");
     const [loading, setLoading] = useState(false);
-    const [useError, setUseError] = useState("")
+    const [useError, setUseError] = useState("");
     const [open, setOpen] = useState(false);
     const [resetPasswordEmail, setResetPasswordEmail] = useState("")
     const [emailSent, setEmailSent] = useState(false)
@@ -150,10 +142,10 @@ export default function SigninScreen() {
             <div className={classes.paper}>
                 <Typography component="h1" variant="h4" className={classes.signinText} >
                     One Cloud ID
-        </Typography>
+                </Typography>
                 <Typography component="h1" variant="h5">
                     Sign in
-        </Typography>
+                </Typography>
                 <Formik
                     initialValues={{
                         email: '',
