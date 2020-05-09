@@ -29,8 +29,8 @@ const App = () => {
         <NotFound default />
         <Home path="/home" />
         <DashboardScreen path="/" />
-        <FirstTimeSignin path="/signin" />
-        <SigninScreen path="/changebacktosignin" />
+        <FirstTimeSignin path="/firsttime" />
+        <SigninScreen path="/signin" />
         <SignUpScreen path="/signup" />
       </Router>
     </MuiPickersUtilsProvider>

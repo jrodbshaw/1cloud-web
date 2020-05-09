@@ -22,8 +22,8 @@ const authReducer = (state, action) => {
   }
 };
 
-const trySignin = dispatch => () => {
-  firebase.auth().onAuthStateChanged(user => {
+const trySignin = (dispatch) => () => {
+  firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       dispatch({ type: "signin", payload: user });
       // next line means if page refreshed from any where the user is rerouted back to dashboard...
@@ -35,7 +35,7 @@ const trySignin = dispatch => () => {
   });
 };
 
-const signup = dispatch => async (email, password) => {
+const signup = (dispatch) => async (email, password) => {
   try {
     const { user } = await firebase
       .auth()
@@ -46,18 +46,16 @@ const signup = dispatch => async (email, password) => {
   }
 };
 
-const signin = dispatch => async (email, password) => {
+const signin = (dispatch) => async (email, password) => {
   try {
     await firebase.auth().signInWithEmailAndPassword(email, password);
-    firebase.auth().onAuthStateChanged(firebaseUser => {
+    firebase.auth().onAuthStateChanged((firebaseUser) => {
       if (firebaseUser) {
         const user = {
-          uid: firebaseUser.uid
+          uid: firebaseUser.uid,
         };
         dispatch({ type: "signin", payload: user });
-        db.collection("users")
-          .doc(user.uid)
-          .set(user, { merge: true });
+        db.collection("users").doc(user.uid).set(user, { merge: true });
       } else {
         dispatch({ type: "signin", payload: null });
       }
@@ -70,7 +68,7 @@ const signin = dispatch => async (email, password) => {
   }
 };
 
-const signout = dispatch => async () => {
+const signout = (dispatch) => async () => {
   try {
     await firebase.auth().signOut();
     dispatch({ type: "signout", payload: null });
@@ -79,12 +77,12 @@ const signout = dispatch => async () => {
   } catch (error) {
     dispatch({
       type: "add_error",
-      payload: error
+      payload: error,
     });
   }
 };
 
-const resetPassword = dispatch => emailAddress => {
+const resetPassword = (dispatch) => (emailAddress) => {
   try {
     firebase.auth().sendPasswordResetEmail(emailAddress);
     // * Email sent.
@@ -94,8 +92,8 @@ const resetPassword = dispatch => emailAddress => {
   }
 };
 
-const clearErrorMessage = dispatch => () => {
-  dispatch({ type: "clear_error_message" });
+const clearErrorMessage = (dispatch) => () => {
+  dispatch({ type: "clear_error_message", payload: "" });
 };
 
 export const { Provider, Context } = createDataContext(
